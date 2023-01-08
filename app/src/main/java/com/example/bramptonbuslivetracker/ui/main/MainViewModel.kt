@@ -13,23 +13,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: VehiclePositionRepository): ViewModel() {
 
-    private val _currentBuses = MutableLiveData<List<String>>()
-    val currentBuses: LiveData<List<String>> = _currentBuses
+    private val _routeList = MutableLiveData<List<String>>()
+    val routeList: LiveData<List<String>> = _routeList
 
-    fun updateData() {
-        viewModelScope.launch {
-            while(true) {
-                val data = repository.getAll()
-                data?.let {
-                    val listOfTrips = mutableListOf<String>()
-                    for(entity in it.entity) {
-                        listOfTrips.add(entity.vehicle.trip.trip_id)
-                        listOfTrips.sort()
-                    }
-                    _currentBuses.value = listOfTrips
-                }
-                delay(1000)
-            }
-        }
+    init {
+        _routeList.value = repository.getRouteList()
     }
 }

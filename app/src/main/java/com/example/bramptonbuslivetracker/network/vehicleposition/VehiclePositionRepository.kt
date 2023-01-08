@@ -62,22 +62,23 @@ class VehiclePositionRepository @Inject constructor(
         return null
     }
 
-    fun getRouteNumber(tripId: String) {
-        val inputStream: InputStream = File("trips.txt").inputStream()
-        val lineList = mutableListOf<String>()
-        inputStream.bufferedReader().forEachLine { lineList.add(it) }
+    fun getRouteVehiclePositions(routeNum: String): List<Entity>? {
+        return vehiclePosition?.entity?.filter {
+            listOf(routeNum).contains(it.vehicle.trip.route_id.split('-')[0])
+        }
+    }
+
+    fun getRouteList(): List<String> {
+        return tripDataList.map { it.route_id }.distinct()
     }
 
     private fun loadTripData() {
         val list = mutableListOf<TripData>()
         val inputStream = context.assets.open("trips/trips.txt")
-        val lineList = mutableListOf<String>()
-        inputStream.bufferedReader().forEachLine { lineList.add(it) }
-
-        for(trip in lineList) {
-            val splitLine = trip.split(',')
+        inputStream.bufferedReader().forEachLine {
+            val splitLine = it.split(',')
             val tripData = TripData(
-                splitLine[0],
+                splitLine[0].split('-')[0],
                 splitLine[1],
                 splitLine[2],
                 splitLine[3],
