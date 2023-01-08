@@ -27,9 +27,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun startDetailActivity(tripId: String) {
+    fun startDetailActivity(routeNumber: String) {
         Intent(this, DetailActivity::class.java).also {
-            it.putExtra("id", tripId)
+            it.putExtra("routeNumber", routeNumber)
             startActivity(it)
         }
     }
@@ -37,22 +37,22 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun listOfCurrentBuses() {
         val viewModel: MainViewModel = viewModel()
-        val currentTrips = viewModel.routeList.observeAsState()
-        currentTrips.value?.let {
+        val routeList = viewModel.routeList.observeAsState()
+        routeList.value?.let {
             LazyColumn {
-                items(it) { trip ->
-                    tripCard(trip)
+                items(it) { routeNumber ->
+                    tripCard(routeNumber)
                 }
             }
         }
     }
 
     @Composable
-    fun tripCard(tripId: String) {
+    fun tripCard(routeNumber: String) {
         Text(
-            text = tripId,
+            text = routeNumber,
             modifier = Modifier.clickable {
-                //startDetailActivity(tripId)
+                startDetailActivity(routeNumber)
             }
         )
     }

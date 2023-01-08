@@ -7,15 +7,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
-import com.example.bramptonbuslivetracker.ui.main.MainViewModel
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -31,42 +28,48 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.init(intent.getStringExtra("id") ?: "")
+        viewModel.init(intent.getStringExtra("routeNumber") ?: "")
         setContent {
-            val entity = viewModel.entity.observeAsState()
-            LocationCard(entity = entity.value)
+            val busList = viewModel.busList.observeAsState()
+            LocationCard(busList = busList.value)
         }
     }
 }
 
 @Composable
-fun LocationCard(entity: Entity?) {
-    entity?.let {
-        Column {
-            Text(it.vehicle.position.latitude.toString())
-            Text(it.vehicle.position.longitude.toString())
+fun LocationCard(busList: List<Entity>?) {
+    busList?.let {
+        if(it.isNotEmpty()){
+            Column {
 
-            val location = LatLng(it.vehicle.position.latitude, it.vehicle.position.longitude)
-            val cameraPosition = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(location, 15f)
-            }
-
-            Box {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPosition
-                ) {
-                    Marker(
-                        state = MarkerState(position = location)
-                    )
+                val location = LatLng(it[0].vehicle.position.latitude, it[0].vehicle.position.longitude)
+                val cameraPosition = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(location, 15f)
                 }
-                Button(onClick = {
-                    cameraPosition.move(CameraUpdateFactory.newLatLng(location))
-                    cameraPosition.move(CameraUpdateFactory.zoomTo(15f))
-                }) {
-                    Text("Center")
+
+                Box {
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize(),
+                        cameraPositionState = cameraPosition
+                    ) {
+                        for(bus in it) {
+                            Marker(
+                                state = MarkerState(position = LatLng(bus.vehicle.position.latitude, bus.vehicle.position.longitude))
+                            )
+                        }
+                    }
+//                    Button(onClick = {
+//                        cameraPosition.move(CameraUpdateFactory.newLatLng(location))
+//                        cameraPosition.move(CameraUpdateFactory.zoomTo(15f))
+//                    }) {
+//                        Text("Center")
+//                    }
                 }
             }
         }
+    }
+
+    if(busList.isNullOrEmpty()) {
+        Text("Tracking information not available for the selected route.")
     }
 }
