@@ -16,20 +16,20 @@ class DetailViewModel @Inject constructor(
     private val repository: VehiclePositionRepository
     ): ViewModel() {
 
-    private val _entity = MutableLiveData<Entity>()
-    val entity: LiveData<Entity> = _entity
+    private val _busList = MutableLiveData<List<Entity>>()
+    val busList: LiveData<List<Entity>> = _busList
 
-    private var tripId = ""
+    private var routeNumber = ""
 
-    fun init(id: String) {
-        tripId = id
+    fun init(routeNumber: String) {
+        this.routeNumber = routeNumber
         refresh()
     }
 
     fun refresh() {
         viewModelScope.launch {
             while(true) {
-                _entity.value = repository.getTrip(tripId)
+                _busList.value = repository.getRouteVehiclePositions(routeNumber)
                 delay(1000)
             }
         }
