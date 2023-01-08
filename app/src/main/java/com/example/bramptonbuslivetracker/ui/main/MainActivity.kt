@@ -1,15 +1,11 @@
 package com.example.bramptonbuslivetracker.ui.main
 
 import android.content.Intent
-import android.inputmethodservice.Keyboard
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
@@ -26,7 +22,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.updateData()
         setContent {
             listOfCurrentBuses()
         }
@@ -42,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun listOfCurrentBuses() {
         val viewModel: MainViewModel = viewModel()
-        val currentTrips = viewModel.currentBuses.observeAsState()
+        val currentTrips = viewModel.routeList.observeAsState()
         currentTrips.value?.let {
             LazyColumn {
                 items(it) { trip ->
@@ -57,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         Text(
             text = tripId,
             modifier = Modifier.clickable {
-                startDetailActivity(tripId)
+                //startDetailActivity(tripId)
             }
         )
     }
