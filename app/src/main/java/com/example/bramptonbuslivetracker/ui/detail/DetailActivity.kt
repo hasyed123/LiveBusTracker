@@ -79,6 +79,13 @@ fun LocationCard(busList: List<Entity>?, direction: Direction?) {
     }
 
     if(busList.isNullOrEmpty()) {
-        Text("Tracking information not available for the selected route.")
+        val text = when(direction) {
+            Direction.NORTH_SOUTH -> "ns"
+            Direction.EAST_WEST -> "ew"
+            Direction.LOOP -> "l"
+            else -> "null"
+        }
+        Text(text)
+        //Text("Tracking information not available for the selected route.")
     }
 }
