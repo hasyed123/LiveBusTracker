@@ -81,7 +81,14 @@ class VehiclePositionRepository @Inject constructor(
         return if(directionList.size==2) {
             if(headsignList.any { it.contains("north", true) } && headsignList.any { it.contains("south", true) }) {
                 Direction.NORTH_SOUTH
-            } else Direction.EAST_WEST
+            }
+            else if(headsignList.any { it.contains("nb", true) } && headsignList.any { it.contains("sb", true) }) {
+                Direction.NORTH_SOUTH
+            }
+            else if(headsignList.any { it.contains(" AM") } && headsignList.any { it.contains(" PM") }) {
+                Direction.LOOP
+            }
+            else Direction.EAST_WEST
         } else Direction.LOOP
 
     }
