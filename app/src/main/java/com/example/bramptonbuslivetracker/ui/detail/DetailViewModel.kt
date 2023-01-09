@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bramptonbuslivetracker.network.vehicleposition.VehiclePositionRepository
+import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -19,10 +20,14 @@ class DetailViewModel @Inject constructor(
     private val _busList = MutableLiveData<List<Entity>>()
     val busList: LiveData<List<Entity>> = _busList
 
+    private val _direction = MutableLiveData<Direction>()
+    val direction: LiveData<Direction> = _direction
+
     private var routeNumber = ""
 
     fun init(routeNumber: String) {
         this.routeNumber = routeNumber
+        _direction.value = repository.getDirection(routeNumber)
         refresh()
     }
 

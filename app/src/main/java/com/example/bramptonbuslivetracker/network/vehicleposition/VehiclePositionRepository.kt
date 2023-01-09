@@ -2,6 +2,7 @@ package com.example.bramptonbuslivetracker.network.vehicleposition
 
 import android.content.Context
 import com.example.bramptonbuslivetracker.network.ApiResponse
+import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.VehiclePosition
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -70,6 +71,19 @@ class VehiclePositionRepository @Inject constructor(
 
     fun getRouteList(): List<String> {
         return tripDataList.map { it.route_id }.distinct()
+    }
+
+    fun getDirection(routeNum: String): Direction {
+        val routeTripData = tripDataList.filter { listOf(routeNum).contains(it.route_id) }
+        val headsignList = routeTripData.map { it.trip_headsign }
+        val directionList = routeTripData.map { it.direction_id }.distinct()
+
+        return if(directionList.size==2) {
+            if(headsignList.any { it.contains("north", true) } && headsignList.any { it.contains("south", true) }) {
+                Direction.NORTH_SOUTH
+            } else Direction.EAST_WEST
+        } else Direction.LOOP
+
     }
 
     private fun loadTripData() {

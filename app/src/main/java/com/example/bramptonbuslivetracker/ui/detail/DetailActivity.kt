@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -31,16 +32,24 @@ class DetailActivity : AppCompatActivity() {
         viewModel.init(intent.getStringExtra("routeNumber") ?: "")
         setContent {
             val busList = viewModel.busList.observeAsState()
-            LocationCard(busList = busList.value)
+            LocationCard(busList = busList.value, direction = viewModel.direction.value)
         }
     }
 }
 
 @Composable
-fun LocationCard(busList: List<Entity>?) {
+fun LocationCard(busList: List<Entity>?, direction: Direction?) {
     busList?.let {
         if(it.isNotEmpty()){
             Column {
+                val text = when(direction) {
+                    Direction.NORTH_SOUTH -> "ns"
+                    Direction.EAST_WEST -> "ew"
+                    Direction.LOOP -> "l"
+                    else -> "null"
+                }
+
+                Text(text)
 
                 val location = LatLng(it[0].vehicle.position.latitude, it[0].vehicle.position.longitude)
                 val cameraPosition = rememberCameraPositionState {
