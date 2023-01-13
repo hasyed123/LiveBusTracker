@@ -24,9 +24,11 @@ class DetailViewModel @Inject constructor(
     val direction: LiveData<Direction> = _direction
 
     private var routeNumber = ""
+    private var directionId = 2
 
-    fun init(routeNumber: String) {
+    fun init(routeNumber: String, directionId: Int) {
         this.routeNumber = routeNumber
+        this.directionId = directionId
         _direction.value = repository.getDirection(routeNumber)
         refresh()
     }
@@ -34,7 +36,7 @@ class DetailViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             while(true) {
-                _busList.value = repository.getRouteVehiclePositions(routeNumber)
+                _busList.value = repository.getRouteVehiclePositions(routeNumber, directionId)
                 delay(1000)
             }
         }

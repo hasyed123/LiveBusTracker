@@ -63,9 +63,19 @@ class VehiclePositionRepository @Inject constructor(
         return null
     }
 
-    fun getRouteVehiclePositions(routeNum: String): List<Entity>? {
-        return vehiclePosition?.entity?.filter {
+    fun getRouteVehiclePositions(routeNum: String, directionId: Int): List<Entity>? {
+        val list = vehiclePosition?.entity?.filter {
             listOf(routeNum).contains(it.vehicle.trip.route_id.split('-')[0])
+        }
+        return if(directionId == 2) list
+        else {
+            val tripsInDirection = tripDataList.filter {
+                listOf(directionId.toString()).contains(it.direction_id) && listOf(routeNum).contains(it.route_id)
+            }.map { it.trip_id }
+
+            list?.filter {
+                tripsInDirection.contains(it.vehicle.trip.trip_id)
+            }
         }
     }
 
