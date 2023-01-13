@@ -29,7 +29,7 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.init(intent.getStringExtra("routeNumber") ?: "")
+        viewModel.init(intent.getStringExtra("routeNumber") ?: "", intent.getIntExtra("directionId", 2))
         setContent {
             val busList = viewModel.busList.observeAsState()
             LocationCard(busList = busList.value, direction = viewModel.direction.value)
