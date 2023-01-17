@@ -6,15 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -29,28 +30,24 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.init(intent.getStringExtra("routeNumber") ?: "", intent.getIntExtra("directionId", 2))
+        viewModel.init(intent.getStringExtra("routeNumber") ?: "")
         setContent {
             val busList = viewModel.busList.observeAsState()
-            LocationCard(busList = busList.value, direction = viewModel.direction.value)
+            val directionPair = viewModel.getDirectionPair()
+
+            Column {
+                DirectionCard(directionPair = directionPair)
+                LocationCard(busList = busList.value)
+            }
         }
     }
 }
 
 @Composable
-fun LocationCard(busList: List<Entity>?, direction: Direction?) {
+fun LocationCard(busList: List<Entity>?) {
     busList?.let {
         if(it.isNotEmpty()){
             Column {
-                val text = when(direction) {
-                    Direction.NORTH_SOUTH -> "ns"
-                    Direction.EAST_WEST -> "ew"
-                    Direction.LOOP -> "l"
-                    else -> "null"
-                }
-
-                Text(text)
-
                 val location = LatLng(it[0].vehicle.position.latitude, it[0].vehicle.position.longitude)
                 val cameraPosition = rememberCameraPositionState {
                     position = CameraPosition.fromLatLngZoom(location, 15f)
@@ -78,14 +75,34 @@ fun LocationCard(busList: List<Entity>?, direction: Direction?) {
         }
     }
 
-    if(busList.isNullOrEmpty()) {
-        val text = when(direction) {
-            Direction.NORTH_SOUTH -> "ns"
-            Direction.EAST_WEST -> "ew"
-            Direction.LOOP -> "l"
-            else -> "null"
-        }
-        Text(text)
-        //Text("Tracking information not available for the selected route.")
+}
+
+@Composable
+fun DirectionCard(directionPair: Direction) {
+    var d1 = ""
+    var d2 = ""
+    if(directionPair == Direction.NORTH_SOUTH) {
+        d1 = "Northbound"
+        d2 = "Southbound"
+    }
+    else if(directionPair == Direction.EAST_WEST) {
+        d1 = "Eastbound"
+        d2 = "Westbound"
+    }
+
+    if(directionPair == Direction.LOOP) {
+        Text("Loop")
+    }
+    else Row {
+        DirectionButton(directionName = d1, 0)
+        DirectionButton(directionName = d2, 1)
+    }
+}
+
+@Composable
+fun DirectionButton(directionName: String, directionId: Int) {
+    val viewModel: DetailViewModel = viewModel()
+    Button(onClick = { viewModel.setDirection(directionId) }) {
+        Text(directionName)
     }
 }

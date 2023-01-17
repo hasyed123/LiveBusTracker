@@ -20,25 +20,33 @@ class DetailViewModel @Inject constructor(
     private val _busList = MutableLiveData<List<Entity>>()
     val busList: LiveData<List<Entity>> = _busList
 
-    private val _direction = MutableLiveData<Direction>()
-    val direction: LiveData<Direction> = _direction
-
     private var routeNumber = ""
-    private var directionId = 2
+    private var directionId = 0
 
-    fun init(routeNumber: String, directionId: Int) {
+    fun init(routeNumber: String) {
         this.routeNumber = routeNumber
-        this.directionId = directionId
-        _direction.value = repository.getDirection(routeNumber)
         refresh()
     }
 
-    fun refresh() {
+    private fun refresh() {
         viewModelScope.launch {
             while(true) {
                 _busList.value = repository.getRouteVehiclePositions(routeNumber, directionId)
                 delay(1000)
             }
         }
+    }
+
+    fun setDirection(directionId: Int) {
+        this.directionId = directionId
+        _busList.value = repository.getRouteVehiclePositions(routeNumber, directionId)
+    }
+
+    fun getDirectionPair(): Direction {
+        repository.getDirection(routeNumber).also {
+            if(it == Direction.LOOP) directionId = 2
+            return it
+        }
+
     }
 }
