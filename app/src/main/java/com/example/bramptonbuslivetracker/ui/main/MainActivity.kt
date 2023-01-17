@@ -9,13 +9,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,55 +36,45 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            listOfCurrentBuses()
+            ListOfCurrentBuses()
         }
     }
 
-    fun startDetailActivity(routeNumber: String, directionId: Int) {
+    private fun startDetailActivity(routeNumber: String) {
         Intent(this, DetailActivity::class.java).also {
             it.putExtra("routeNumber", routeNumber)
-            it.putExtra("directionId", directionId)
             startActivity(it)
         }
     }
 
-    var mLastClickTime = 0L
-    fun isClickRecently(): Boolean {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 200) {
-            return true
-        }
-        return false
-    }
-
     @Composable
-    fun listOfCurrentBuses() {
+    fun ListOfCurrentBuses() {
         val viewModel: MainViewModel = viewModel()
         val routeList = viewModel.routeList.observeAsState()
         routeList.value?.let {
-            LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 100.dp)) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.background(color = Color(139, 0, 0))
+            ) {
                 itemsIndexed(it.map{ it.toInt() }.sorted()) { index, routeNumber ->
-                    val color = if(index%2==0) Color.LightGray
-                    else Color.Green
-                    routeCard(routeNumber.toString(), color)
+                    RouteCard(routeNumber.toString())
                 }
             }
         }
     }
 
     @Composable
-    fun routeCard(routeNumber: String, color: Color) {
-        var popupControl by remember { mutableStateOf(false) }
+    fun RouteCard(routeNumber: String) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(color = color)
+                .background(color = Color.LightGray)
                 .clickable {
-                    if(!isClickRecently()) {
-                        popupControl = popupControl==false
-                    }
-                    //startDetailActivity(routeNumber)
+                    startDetailActivity(routeNumber)
                 }
         ) {
             Text(
@@ -94,56 +82,15 @@ class MainActivity : AppCompatActivity() {
                 fontSize = 30.sp,
                 color = Color.Blue
             )
-
-            if (popupControl) {
-                var d1 = "North"
-                var d2 = "South"
-                when(viewModel.getDirection(routeNumber)) {
-                    Direction.LOOP -> {
-                        startDetailActivity(routeNumber, 2)
-                        popupControl = false
-                    }
-                    Direction.EAST_WEST -> {
-                        d1 = "East"
-                        d2 = "West"
-                    }
-                    else -> {}
-                }
-                if(popupControl) {
-                    Popup(onDismissRequest = {
-                        popupControl = false
-                        mLastClickTime = SystemClock.elapsedRealtime()
-                    }) {
-                        Column {
-                            Text(
-                                text = d1,
-                                modifier = Modifier.clickable {
-                                    startDetailActivity(routeNumber, 0)
-                                }
-                            )
-                            Text(
-                                text = d2,
-                                modifier = Modifier.clickable {
-                                    startDetailActivity(routeNumber, 1)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 
     @Preview
     @Composable
     fun previewRouteCard() {
-        routeCard("34", Color.White)
+        RouteCard("34")
     }
 
-    @Composable
-    fun directionPopup(direction: Direction) {
-
-    }
 }
 
 

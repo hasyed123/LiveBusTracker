@@ -21,7 +21,4 @@ class MainViewModel @Inject constructor(private val repository: VehiclePositionR
         _routeList.value = repository.getRouteList()
     }
 
-    fun getDirection(routeNumber: String): Direction {
-        return repository.getDirection(routeNumber)
-    }
 }
