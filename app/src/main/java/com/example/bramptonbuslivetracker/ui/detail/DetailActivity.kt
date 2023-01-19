@@ -4,15 +4,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
@@ -23,6 +28,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.AndroidEntryPoint
+import org.w3c.dom.Text
 
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
@@ -33,10 +39,11 @@ class DetailActivity : AppCompatActivity() {
         viewModel.init(intent.getStringExtra("routeNumber") ?: "")
         setContent {
             val busList = viewModel.busList.observeAsState()
+            val currentDirectionId = viewModel.directionId.observeAsState()
             val directionPair = viewModel.getDirectionPair()
 
             Column {
-                DirectionCard(directionPair = directionPair)
+                DirectionCard(directionPair = directionPair, onDirectionClick = viewModel::setDirection, currentDirectionId = currentDirectionId.value ?: 0)
                 LocationCard(busList = busList.value)
             }
         }
@@ -78,7 +85,7 @@ fun LocationCard(busList: List<Entity>?) {
 }
 
 @Composable
-fun DirectionCard(directionPair: Direction) {
+fun DirectionCard(directionPair: Direction, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int) {
     var d1 = ""
     var d2 = ""
     if(directionPair == Direction.NORTH_SOUTH) {
@@ -93,16 +100,29 @@ fun DirectionCard(directionPair: Direction) {
     if(directionPair == Direction.LOOP) {
         Text("Loop")
     }
-    else Row {
-        DirectionButton(directionName = d1, 0)
-        DirectionButton(directionName = d2, 1)
+    else Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        DirectionButton(directionName = d1, 0, onDirectionClick, currentDirectionId, modifier = Modifier.weight(1f))
+        DirectionButton(directionName = d2, 1, onDirectionClick, currentDirectionId, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun DirectionButton(directionName: String, directionId: Int) {
-    val viewModel: DetailViewModel = viewModel()
-    Button(onClick = { viewModel.setDirection(directionId) }) {
-        Text(directionName)
+fun DirectionButton(directionName: String, directionId: Int, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .background(color = if(currentDirectionId == directionId) Color.Red else Color.White)
+            .clickable { onDirectionClick(directionId) }
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(directionName, color = if(currentDirectionId == directionId) Color.White else Color.Red, fontSize = 20.sp)
     }
+}
+
+@Preview
+@Composable
+fun PreviewDirectionCard() {
+    DirectionCard(directionPair = Direction.NORTH_SOUTH, {}, 0)
 }
