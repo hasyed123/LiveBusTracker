@@ -1,5 +1,8 @@
 package com.example.bramptonbuslivetracker.ui.detail
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -14,21 +17,27 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.AndroidEntryPoint
 import org.w3c.dom.Text
+import com.example.bramptonbuslivetracker.R
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.*
+
 
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
@@ -63,11 +72,14 @@ fun LocationCard(busList: List<Entity>?) {
                 Box {
                     GoogleMap(
                         modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPosition
+                        cameraPositionState = cameraPosition,
+                        properties = MapProperties(mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                            LocalContext.current, R.raw.style_json))
                     ) {
                         for(bus in it) {
                             Marker(
-                                state = MarkerState(position = LatLng(bus.vehicle.position.latitude, bus.vehicle.position.longitude))
+                                state = MarkerState(position = LatLng(bus.vehicle.position.latitude, bus.vehicle.position.longitude)),
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
                             )
                         }
                     }
@@ -112,7 +124,7 @@ fun DirectionCard(directionPair: Direction, onDirectionClick: (directionId: Int)
 fun DirectionButton(directionName: String, directionId: Int, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .background(color = if(currentDirectionId == directionId) Color.Red else Color.White)
+            .background(color = if (currentDirectionId == directionId) Color.Red else Color.White)
             .clickable { onDirectionClick(directionId) }
             .padding(8.dp),
         contentAlignment = Alignment.Center
