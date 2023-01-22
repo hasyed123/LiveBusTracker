@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,32 +49,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     @Composable
     fun ListOfCurrentBuses() {
         val viewModel: MainViewModel = viewModel()
         val routeList = viewModel.routeList.observeAsState()
         routeList.value?.let {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.background(color = Color(139, 0, 0))
+                columns = GridCells.Adaptive(minSize = 100.dp)
             ) {
                 itemsIndexed(it.map{ it.toInt() }.sorted()) { index, routeNumber ->
-                    RouteCard(routeNumber.toString())
+                    RouteCard(routeNumber.toString(), index)
                 }
             }
         }
     }
 
     @Composable
-    fun RouteCard(routeNumber: String) {
+    fun RouteCard(routeNumber: String, index: Int) {
+        val backgroundColor = if(index%2==0) Color(139, 0, 0) else Color(0, 0, 255)
+        val secondaryColor = if(index%2==0) Color(139, 0, 0, 100) else Color(0, 0, 255, 100)
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(color = Color.LightGray)
+                .background(brush = Brush.verticalGradient(
+                    .0f to backgroundColor,
+                    .85f to secondaryColor
+                ))
                 .clickable {
                     startDetailActivity(routeNumber)
                 }
@@ -80,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             Text(
                 text = routeNumber,
                 fontSize = 30.sp,
-                color = Color.Blue
+                color = Color.Black
             )
         }
     }
@@ -88,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     @Preview
     @Composable
     fun previewRouteCard() {
-        RouteCard("34")
+        RouteCard("34", 1)
     }
 
 }
