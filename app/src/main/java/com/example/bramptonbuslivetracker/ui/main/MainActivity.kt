@@ -8,8 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -22,11 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bramptonbuslivetracker.R
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,45 +61,72 @@ class MainActivity : AppCompatActivity() {
         val viewModel: MainViewModel = viewModel()
         val routeList = viewModel.routeList.observeAsState()
         routeList.value?.let {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp)
+
+            Column(
+                Modifier.background(color = Color(0,0,255,200))
             ) {
-                itemsIndexed(it.map{ it.toInt() }.sorted()) { index, routeNumber ->
-                    RouteCard(routeNumber.toString(), index)
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp), contentAlignment = Alignment.Center) {
+                    Text("Routes", fontSize = 20.sp,modifier = Modifier.background(color = Color.Transparent), color = Color.White, fontFamily = FontFamily(
+                        Font(R.font.signikanegative_regular)
+                    )
+                    )
+                }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 100.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(4.dp)
+                ) {
+                    itemsIndexed(it.sortedBy { it.num.toInt() }) { index, routeNumber ->
+                        RouteCard(routeNumber.name, routeNumber.num.toString())
+                    }
                 }
             }
         }
     }
 
     @Composable
-    fun RouteCard(routeNumber: String, index: Int) {
-        val backgroundColor = if(index%2==0) Color(139, 0, 0) else Color(0, 0, 255)
-        val secondaryColor = if(index%2==0) Color(139, 0, 0, 100) else Color(0, 0, 255, 100)
+    fun RouteCard(name: String, num: String) {
+        val backgroundColor = Color.LightGray
+        val secondaryColor = Color.White
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(brush = Brush.verticalGradient(
-                    .0f to backgroundColor,
-                    .85f to secondaryColor
-                ))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            backgroundColor,
+                            secondaryColor
+                        )
+                    ), shape = RoundedCornerShape(8.dp)
+                )
                 .clickable {
-                    startDetailActivity(routeNumber)
+                    startDetailActivity(num)
                 }
         ) {
-            Text(
-                text = routeNumber,
-                fontSize = 30.sp,
-                color = Color.Black
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
+                Text(
+                    text = num,
+                    fontSize = 30.sp,
+                    color = Color.Blue,
+                    fontFamily = FontFamily(
+                        Font(R.font.signikanegative_regular))
+                )
+                Text(name, color = Color.Blue, textAlign = TextAlign.Center, fontFamily = FontFamily(
+                    Font(R.font.signikanegative_regular)))
+            }
         }
     }
 
     @Preview
     @Composable
     fun previewRouteCard() {
-        RouteCard("34", 1)
+        RouteCard("34", "Pearson Airport Express")
     }
 
 }
