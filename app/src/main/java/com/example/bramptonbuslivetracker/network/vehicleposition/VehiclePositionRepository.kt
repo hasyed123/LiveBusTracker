@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.bramptonbuslivetracker.network.ApiResponse
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
+import com.example.bramptonbuslivetracker.network.vehicleposition.model.RouteData
 import com.example.bramptonbuslivetracker.network.vehicleposition.model.VehiclePosition
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
@@ -23,9 +24,12 @@ class VehiclePositionRepository @Inject constructor(
 
     private lateinit var tripDataList: List<TripData>
 
+    private lateinit var routeDataList: List<RouteData>
+
     init {
-        loadTripData()
+        loadRoutes()
         GlobalScope.launch {
+            loadTripData()
             while(true) {
                 when (val response = getVehiclePositions()) {
                     is ApiResponse.Success -> {
@@ -79,8 +83,8 @@ class VehiclePositionRepository @Inject constructor(
         }
     }
 
-    fun getRouteList(): List<String> {
-        return tripDataList.map { it.route_id }.distinct()
+    fun getRouteList(): List<RouteData> {
+        return routeDataList
     }
 
     fun getDirection(routeNum: String): Direction {
@@ -105,7 +109,7 @@ class VehiclePositionRepository @Inject constructor(
 
     private fun loadTripData() {
         val list = mutableListOf<TripData>()
-        val inputStream = context.assets.open("trips/trips.txt")
+        val inputStream = context.assets.open("transit info/trips.txt")
         inputStream.bufferedReader().forEachLine {
             val splitLine = it.split(',')
             val tripData = TripData(
@@ -123,5 +127,20 @@ class VehiclePositionRepository @Inject constructor(
         }
 
         tripDataList = list
+    }
+
+    private fun loadRoutes() {
+        val list = mutableListOf<RouteData>()
+        val inputStream = context.assets.open("transit info/routes.txt")
+        inputStream.bufferedReader().forEachLine {
+            val splitLine = it.split(',')
+            val routeData = RouteData(
+                splitLine[1],
+                splitLine[2].substring(1, splitLine[2].length-1)
+            )
+            list.add(routeData)
+        }
+
+        routeDataList = list
     }
 }
