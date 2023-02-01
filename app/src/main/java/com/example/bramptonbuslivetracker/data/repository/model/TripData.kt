@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.network.vehicleposition
+package com.example.bramptonbuslivetracker.data.repository.model
 
 data class TripData(
     val route_id: String,

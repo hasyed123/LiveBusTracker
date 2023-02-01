@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker
+package com.example.bramptonbuslivetracker.di
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -2,11 +2,14 @@ package com.example.bramptonbuslivetracker.di
 
 import android.app.Application
 import android.content.Context
-import com.example.bramptonbuslivetracker.network.vehicleposition.VehiclePositionApi
+import com.example.bramptonbuslivetracker.data.remote.VehiclePositionApi
+import com.example.bramptonbuslivetracker.data.repository.VehiclePositionRepositoryImpl
+import com.example.bramptonbuslivetracker.domain.repository.VehiclePositionRepository
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -28,6 +31,12 @@ object Module {
             ))
             .build()
             .create(VehiclePositionApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesVehiclePositionRepository(api: VehiclePositionApi, @ApplicationContext context: Context): VehiclePositionRepository {
+        return VehiclePositionRepositoryImpl(api, context)
     }
 
 }

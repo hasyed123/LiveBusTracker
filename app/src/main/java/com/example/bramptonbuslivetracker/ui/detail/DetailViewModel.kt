@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bramptonbuslivetracker.network.vehicleposition.VehiclePositionRepository
-import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
-import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
+import com.example.bramptonbuslivetracker.domain.model.DirectionPair
+import com.example.bramptonbuslivetracker.domain.model.Bus
+import com.example.bramptonbuslivetracker.domain.use_case.GetRouteBusesUseCase
+import com.example.bramptonbuslivetracker.domain.use_case.GetRouteDirectionPairUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -14,11 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: VehiclePositionRepository
+    private val getRouteBusesUseCase: GetRouteBusesUseCase,
+    private val getRouteDirectionPairUseCase: GetRouteDirectionPairUseCase
     ): ViewModel() {
 
-    private val _busList = MutableLiveData<List<Entity>>()
-    val busList: LiveData<List<Entity>> = _busList
+    private val _busList = MutableLiveData<List<Bus>>()
+    val busList: LiveData<List<Bus>> = _busList
 
     private val _directionId = MutableLiveData<Int>()
     val directionId: LiveData<Int> = _directionId
@@ -35,22 +37,25 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             while(true) {
                 _busList.value =
-                    directionId.value?.let { repository.getRouteVehiclePositions(routeNumber, it) }
+                    directionId.value?.let { getRouteBusesUseCase.getRouteBuses(routeNumber, it) }
                 delay(1000)
             }
         }
     }
 
     fun setDirection(directionId: Int) {
-        _directionId.value = directionId
-        _busList.value = repository.getRouteVehiclePositions(routeNumber, directionId)
+        if(directionId != _directionId.value) {
+            _directionId.value = directionId
+            viewModelScope.launch {
+                _busList.value = getRouteBusesUseCase.getRouteBuses(routeNumber, directionId)
+            }
+        }
     }
 
-    fun getDirectionPair(): Direction {
-        repository.getDirection(routeNumber).also {
-            if(it == Direction.LOOP) _directionId.value = 2
+    fun getDirectionPair(): DirectionPair {
+        getRouteDirectionPairUseCase.getDirection(routeNumber).also {
+            if(it == DirectionPair.LOOP) _directionId.value = 2
             return it
         }
-
     }
 }

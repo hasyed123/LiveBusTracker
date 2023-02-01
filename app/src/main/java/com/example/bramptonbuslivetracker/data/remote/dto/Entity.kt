@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.network.vehicleposition.model
+package com.example.bramptonbuslivetracker.data.remote.dto
 
 data class Entity(
     val alert: Any,

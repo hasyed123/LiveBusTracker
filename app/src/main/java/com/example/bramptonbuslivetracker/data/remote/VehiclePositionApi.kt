@@ -1,6 +1,6 @@
-package com.example.bramptonbuslivetracker.network.vehicleposition
+package com.example.bramptonbuslivetracker.data.remote
 
-import com.example.bramptonbuslivetracker.network.vehicleposition.model.VehiclePosition
+import com.example.bramptonbuslivetracker.data.remote.dto.VehiclePositionDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -9,5 +9,5 @@ interface VehiclePositionApi {
     suspend fun getVehiclePositions(
         @Query("format")
         format: String = "json"
-    ): VehiclePosition
+    ): VehiclePositionDto
 }
