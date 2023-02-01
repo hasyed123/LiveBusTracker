@@ -1,8 +1,5 @@
 package com.example.bramptonbuslivetracker.ui.detail
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -10,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,23 +14,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.bramptonbuslivetracker.network.vehicleposition.model.Direction
-import com.example.bramptonbuslivetracker.network.vehicleposition.model.Entity
-import com.google.android.gms.maps.model.BitmapDescriptor
+import com.example.bramptonbuslivetracker.domain.model.DirectionPair
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
-import org.w3c.dom.Text
 import com.example.bramptonbuslivetracker.R
-import com.google.android.gms.maps.GoogleMapOptions
+import com.example.bramptonbuslivetracker.domain.model.Bus
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 
@@ -60,11 +49,11 @@ class DetailActivity : AppCompatActivity() {
 }
 
 @Composable
-fun LocationCard(busList: List<Entity>?) {
+fun LocationCard(busList: List<Bus>?) {
     busList?.let {
         if(it.isNotEmpty()){
             Column {
-                val location = LatLng(it[0].vehicle.position.latitude, it[0].vehicle.position.longitude)
+                val location = LatLng(it[0].latitude, it[0].longitude)
                 val cameraPosition = rememberCameraPositionState {
                     position = CameraPosition.fromLatLngZoom(location, 15f)
                 }
@@ -78,7 +67,7 @@ fun LocationCard(busList: List<Entity>?) {
                     ) {
                         for(bus in it) {
                             Marker(
-                                state = MarkerState(position = LatLng(bus.vehicle.position.latitude, bus.vehicle.position.longitude)),
+                                state = MarkerState(position = LatLng(bus.latitude, bus.longitude)),
                                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
                             )
                         }
@@ -97,19 +86,19 @@ fun LocationCard(busList: List<Entity>?) {
 }
 
 @Composable
-fun DirectionCard(directionPair: Direction, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int) {
+fun DirectionCard(directionPair: DirectionPair, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int) {
     var d1 = ""
     var d2 = ""
-    if(directionPair == Direction.NORTH_SOUTH) {
+    if(directionPair == DirectionPair.NORTH_SOUTH) {
         d1 = "Northbound"
         d2 = "Southbound"
     }
-    else if(directionPair == Direction.EAST_WEST) {
+    else if(directionPair == DirectionPair.EAST_WEST) {
         d1 = "Eastbound"
         d2 = "Westbound"
     }
 
-    if(directionPair == Direction.LOOP) {
+    if(directionPair == DirectionPair.LOOP) {
         Text("Loop")
     }
     else Row(
@@ -136,5 +125,5 @@ fun DirectionButton(directionName: String, directionId: Int, onDirectionClick: (
 @Preview
 @Composable
 fun PreviewDirectionCard() {
-    DirectionCard(directionPair = Direction.NORTH_SOUTH, {}, 0)
+    DirectionCard(directionPair = DirectionPair.NORTH_SOUTH, {}, 0)
 }
