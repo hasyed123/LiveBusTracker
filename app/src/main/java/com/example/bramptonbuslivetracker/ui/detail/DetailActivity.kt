@@ -113,12 +113,12 @@ fun DirectionCard(directionPair: DirectionPair, onDirectionClick: (directionId: 
 fun DirectionButton(directionName: String, directionId: Int, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .background(color = if (currentDirectionId == directionId) Color.Red else Color.White)
+            .background(color = if (currentDirectionId == directionId) Color.Blue else Color.White)
             .clickable { onDirectionClick(directionId) }
             .padding(8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(directionName, color = if(currentDirectionId == directionId) Color.White else Color.Red, fontSize = 20.sp)
+        Text(directionName, color = if(currentDirectionId == directionId) Color.White else Color.Blue, fontSize = 20.sp)
     }
 }
 
