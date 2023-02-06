@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.ui.detail
+package com.example.bramptonbuslivetracker.presentation.detail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,6 +24,9 @@ import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.bramptonbuslivetracker.R
 import com.example.bramptonbuslivetracker.domain.model.Bus
+import com.example.bramptonbuslivetracker.theme.regularBlue
+import com.example.bramptonbuslivetracker.theme.regularSignikanegativeBlue20
+import com.example.bramptonbuslivetracker.theme.regularSignikanegativeWhite20
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 
@@ -41,7 +44,11 @@ class DetailActivity : AppCompatActivity() {
             val directionPair = viewModel.getDirectionPair()
 
             Column {
-                DirectionCard(directionPair = directionPair, onDirectionClick = viewModel::setDirection, currentDirectionId = currentDirectionId.value ?: 0)
+                DirectionCard(
+                    directionPair = directionPair,
+                    onDirectionClick = viewModel::setDirection,
+                    currentDirectionId = currentDirectionId.value ?: 0
+                )
                 LocationCard(busList = busList.value)
             }
         }
@@ -86,7 +93,11 @@ fun LocationCard(busList: List<Bus>?) {
 }
 
 @Composable
-fun DirectionCard(directionPair: DirectionPair, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int) {
+fun DirectionCard(
+    directionPair: DirectionPair,
+    onDirectionClick: (directionId: Int) -> Unit,
+    currentDirectionId: Int
+) {
     var d1 = ""
     var d2 = ""
     if(directionPair == DirectionPair.NORTH_SOUTH) {
@@ -101,24 +112,47 @@ fun DirectionCard(directionPair: DirectionPair, onDirectionClick: (directionId: 
     if(directionPair == DirectionPair.LOOP) {
         Text("Loop")
     }
-    else Row(
+    else Row (
         modifier = Modifier.fillMaxWidth()
     ) {
-        DirectionButton(directionName = d1, 0, onDirectionClick, currentDirectionId, modifier = Modifier.weight(1f))
-        DirectionButton(directionName = d2, 1, onDirectionClick, currentDirectionId, modifier = Modifier.weight(1f))
+        DirectionButton(
+            directionName = d1,
+            directionId = 0,
+            onDirectionClick = onDirectionClick,
+            currentDirectionId = currentDirectionId,
+            modifier = Modifier.weight(1f)
+        )
+        DirectionButton(
+            directionName = d2,
+            directionId = 1,
+            onDirectionClick = onDirectionClick,
+            currentDirectionId = currentDirectionId,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
 @Composable
-fun DirectionButton(directionName: String, directionId: Int, onDirectionClick: (directionId: Int) -> Unit, currentDirectionId: Int, modifier: Modifier = Modifier) {
+fun DirectionButton(
+    directionName: String,
+    directionId: Int,
+    onDirectionClick: (directionId: Int) -> Unit,
+    currentDirectionId: Int,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
-            .background(color = if (currentDirectionId == directionId) Color.Blue else Color.White)
+            .background(color = if (currentDirectionId == directionId) regularBlue else Color.White)
             .clickable { onDirectionClick(directionId) }
             .padding(8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(directionName, color = if(currentDirectionId == directionId) Color.White else Color.Blue, fontSize = 20.sp)
+        Text(
+            text = directionName,
+            style = if(currentDirectionId == directionId)
+                regularSignikanegativeWhite20.body1 else
+                    regularSignikanegativeBlue20.body1
+        )
     }
 }
 

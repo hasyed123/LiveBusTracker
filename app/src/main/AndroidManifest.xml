@@ -13,10 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BramptonBusLiveTracker">
         <activity
-            android:name=".ui.detail.DetailActivity"
+            android:name=".presentation.detail.DetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
