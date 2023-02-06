@@ -1,6 +1,5 @@
 package com.example.bramptonbuslivetracker.di
 
-import android.app.Application
 import android.content.Context
 import com.example.bramptonbuslivetracker.data.remote.VehiclePositionApi
 import com.example.bramptonbuslivetracker.data.repository.VehiclePositionRepositoryImpl
