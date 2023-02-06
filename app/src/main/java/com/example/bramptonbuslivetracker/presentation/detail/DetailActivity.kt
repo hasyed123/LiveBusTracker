@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.domain.model.DirectionPair
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -23,9 +25,9 @@ import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.bramptonbuslivetracker.R
 import com.example.bramptonbuslivetracker.domain.model.Bus
-import com.example.bramptonbuslivetracker.theme.regularBlue
-import com.example.bramptonbuslivetracker.theme.regularSignikanegativeBlue20
-import com.example.bramptonbuslivetracker.theme.regularSignikanegativeWhite20
+import com.example.bramptonbuslivetracker.shared.composable.TopBar
+import com.example.bramptonbuslivetracker.shared.theme.regularSignikanegativeRed20
+import com.example.bramptonbuslivetracker.shared.theme.regularSignikanegativeWhite20
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 
@@ -38,21 +40,38 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewModel.init(intent.getStringExtra("routeNumber") ?: "")
         setContent {
-            val busList = viewModel.busList.observeAsState()
-            val currentDirectionId = viewModel.directionId.observeAsState()
-            val directionPair = viewModel.getDirectionPair()
-
-            Column {
-                DirectionCard(
-                    directionPair = directionPair,
-                    onDirectionClick = viewModel::setDirection,
-                    currentDirectionId = currentDirectionId.value ?: 0
-                )
-                LocationCard(busList = busList.value)
-            }
+            DetailScreen()
         }
     }
 }
+
+@Composable
+fun DetailScreen() {
+    val viewModel: DetailViewModel = viewModel()
+    val busList = viewModel.busList.observeAsState()
+    val currentDirectionId = viewModel.directionId.observeAsState()
+    val directionPair = viewModel.getDirectionPair()
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = "Very long Route name",
+                backButton = true
+            )
+        }
+    ) {
+        Column {
+            DirectionCard(
+                directionPair = directionPair,
+                onDirectionClick = viewModel::setDirection,
+                currentDirectionId = currentDirectionId.value ?: 0
+            )
+            LocationCard(busList = busList.value)
+        }
+        Modifier.padding(it)
+    }
+}
+
 
 @Composable
 fun LocationCard(busList: List<Bus>?) {
@@ -141,7 +160,11 @@ fun DirectionButton(
 ) {
     Box(
         modifier = modifier
-            .background(color = if (currentDirectionId == directionId) regularBlue else Color.White)
+            .background(
+                color = if (currentDirectionId == directionId)
+                    Color.Red else
+                    Color.White
+            )
             .clickable { onDirectionClick(directionId) }
             .padding(8.dp),
         contentAlignment = Alignment.Center
@@ -150,7 +173,7 @@ fun DirectionButton(
             text = directionName,
             style = if(currentDirectionId == directionId)
                 regularSignikanegativeWhite20.body1 else
-                    regularSignikanegativeBlue20.body1
+                    regularSignikanegativeRed20.body1
         )
     }
 }
@@ -159,4 +182,10 @@ fun DirectionButton(
 @Composable
 fun PreviewDirectionCard() {
     DirectionCard(directionPair = DirectionPair.NORTH_SOUTH, {}, 0)
+}
+
+@Preview
+@Composable
+fun PreviewDetailTopBar() {
+    TopBar(title = "Bovaird", backButton = true)
 }

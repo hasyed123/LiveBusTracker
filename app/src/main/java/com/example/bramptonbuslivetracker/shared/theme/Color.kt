@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.theme
+package com.example.bramptonbuslivetracker.shared.theme
 
 import androidx.compose.ui.graphics.Color
 
