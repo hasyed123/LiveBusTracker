@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -24,8 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.presentation.detail.DetailActivity
+import com.example.bramptonbuslivetracker.shared.composable.TopBar
+import com.example.bramptonbuslivetracker.shared.theme.regularBlue
+import com.example.bramptonbuslivetracker.shared.theme.regularSignikanegativeBlue
+import com.example.bramptonbuslivetracker.shared.theme.regularSignikanegativeBlue30
 import dagger.hilt.android.AndroidEntryPoint
-import com.example.bramptonbuslivetracker.theme.*
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -34,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-            ListOfCurrentBuses()
+            MainScreen()
         }
     }
 
@@ -45,27 +50,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     @Composable
-    fun ListOfCurrentBuses() {
+    fun MainScreen() {
         val viewModel: MainViewModel = viewModel()
+        
+        Scaffold(
+            topBar = {
+               TopBar(
+                   title = "Routes",
+                   backButton = false
+               )
+            }
+        ) {
+            ListOfCurrentBuses(viewModel)
+            Modifier.padding(it)
+        }
+    }
+    
+    @Composable
+    fun ListOfCurrentBuses(viewModel: MainViewModel) {
         val routeList = viewModel.routeList.observeAsState()
         routeList.value?.let {
 
             Column(
                 Modifier.background(color = regularBlue)
             ) {
-                Box(
-                    modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp), contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Routes",
-                        style = regularSignikanegativeWhite20.body1
-                    )
-                }
-
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 100.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),

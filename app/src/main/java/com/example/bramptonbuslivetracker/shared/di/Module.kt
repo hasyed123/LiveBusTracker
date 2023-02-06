@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.di
+package com.example.bramptonbuslivetracker.shared.di
 
 import android.content.Context
 import com.example.bramptonbuslivetracker.data.remote.VehiclePositionApi

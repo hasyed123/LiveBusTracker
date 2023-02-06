@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.theme
+package com.example.bramptonbuslivetracker.shared.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.Typography
@@ -28,6 +28,14 @@ val regularSignikanegativeWhite20 = Typography(
         fontFamily = FontFamily(Font(R.font.signikanegative_regular)),
         fontSize = 20.sp,
         color = Color.White
+    )
+)
+
+val regularSignikanegativeRed20 = Typography(
+    body1 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.signikanegative_regular)),
+        fontSize = 20.sp,
+        color = Color.Red
     )
 )
 
