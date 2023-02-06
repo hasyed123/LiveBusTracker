@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.ui.main
+package com.example.bramptonbuslivetracker.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

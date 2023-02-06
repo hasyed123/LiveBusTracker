@@ -1,4 +1,4 @@
-package com.example.bramptonbuslivetracker.ui.main
+package com.example.bramptonbuslivetracker.presentation.main
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -28,12 +28,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bramptonbuslivetracker.R
-import com.example.bramptonbuslivetracker.ui.detail.DetailActivity
+import com.example.bramptonbuslivetracker.presentation.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.bramptonbuslivetracker.theme.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,14 +58,16 @@ class MainActivity : AppCompatActivity() {
         routeList.value?.let {
 
             Column(
-                Modifier.background(color = Color(0,0,255,200))
+                Modifier.background(color = regularBlue)
             ) {
-                Box(modifier = Modifier
+                Box(
+                    modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp), contentAlignment = Alignment.Center) {
-                    Text("Routes", fontSize = 20.sp,modifier = Modifier.background(color = Color.Transparent), color = Color.White, fontFamily = FontFamily(
-                        Font(R.font.signikanegative_regular)
-                    )
+                    .padding(8.dp), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Routes",
+                        style = regularSignikanegativeWhite20.body1
                     )
                 }
 
@@ -98,22 +100,26 @@ class MainActivity : AppCompatActivity() {
                             backgroundColor,
                             secondaryColor
                         )
-                    ), shape = RoundedCornerShape(8.dp)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 )
                 .clickable {
                     startDetailActivity(num)
                 }
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
                 Text(
                     text = num,
-                    fontSize = 30.sp,
-                    color = Color.Blue,
-                    fontFamily = FontFamily(
-                        Font(R.font.signikanegative_regular))
+                    style = regularSignikanegativeBlue30.body1
                 )
-                Text(name, color = Color.Blue, textAlign = TextAlign.Center, fontFamily = FontFamily(
-                    Font(R.font.signikanegative_regular)))
+                Text(
+                    text = name,
+                    textAlign = TextAlign.Center,
+                    style = regularSignikanegativeBlue.body1
+                )
             }
         }
     }
