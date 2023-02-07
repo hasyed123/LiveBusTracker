@@ -74,7 +74,9 @@ class MainActivity : AppCompatActivity() {
         routeList.value?.let {
 
             Column(
-                Modifier.background(color = regularBlue)
+                Modifier
+                    .fillMaxSize()
+                    .background(color = regularBlue)
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 100.dp),
