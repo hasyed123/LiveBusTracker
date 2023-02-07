@@ -25,6 +25,9 @@ class DetailViewModel @Inject constructor(
     private val _directionId = MutableLiveData<Int>()
     val directionId: LiveData<Int> = _directionId
 
+    private val _directionSwitched = MutableLiveData<Boolean>(false)
+    val directionSwitched: LiveData<Boolean> = _directionSwitched
+
     private var routeNumber = ""
     private var routeName = ""
 
@@ -52,6 +55,7 @@ class DetailViewModel @Inject constructor(
                 _busList.value = getRouteBusesUseCase.getRouteBuses(routeNumber, directionId)
             }
         }
+        _directionSwitched.value = true
     }
 
     fun getDirectionPair(): DirectionPair {
@@ -63,5 +67,9 @@ class DetailViewModel @Inject constructor(
 
     fun getRouteName(): String {
         return routeName
+    }
+
+    fun saveDirection() {
+        _directionSwitched.value = false
     }
 }
