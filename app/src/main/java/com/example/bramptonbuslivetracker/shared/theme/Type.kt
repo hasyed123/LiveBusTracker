@@ -31,11 +31,11 @@ val regularSignikanegativeWhite20 = Typography(
     )
 )
 
-val regularSignikanegativeRed20 = Typography(
+val regularSignikanegativeLightGray20 = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.signikanegative_regular)),
         fontSize = 20.sp,
-        color = Color.Red
+        color = Color.LightGray
     )
 )
 
