@@ -26,10 +26,12 @@ class DetailViewModel @Inject constructor(
     val directionId: LiveData<Int> = _directionId
 
     private var routeNumber = ""
+    private var routeName = ""
 
-    fun init(routeNumber: String) {
+    fun init(routeNumber: String, routeName: String) {
         _directionId.value = 0
         this.routeNumber = routeNumber
+        this.routeName = routeName
         refresh()
     }
 
@@ -57,5 +59,9 @@ class DetailViewModel @Inject constructor(
             if(it == DirectionPair.LOOP) _directionId.value = 2
             return it
         }
+    }
+
+    fun getRouteName(): String {
+        return routeName
     }
 }

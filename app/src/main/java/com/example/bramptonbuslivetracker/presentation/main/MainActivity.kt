@@ -43,9 +43,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startDetailActivity(routeNumber: String) {
+    private fun startDetailActivity(routeNumber: String, routeName: String) {
         Intent(this, DetailActivity::class.java).also {
             it.putExtra("routeNumber", routeNumber)
+            it.putExtra("routeName", routeName)
             startActivity(it)
         }
     }
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                     shape = RoundedCornerShape(8.dp)
                 )
                 .clickable {
-                    startDetailActivity(num)
+                    startDetailActivity(num, name)
                 }
         ) {
             Column(

@@ -38,7 +38,10 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.init(intent.getStringExtra("routeNumber") ?: "")
+        viewModel.init(
+            routeNumber = intent.getStringExtra("routeNumber") ?: "",
+            routeName = intent.getStringExtra("routeName") ?: ""
+        )
         setContent {
             DetailScreen()
         }
@@ -55,7 +58,7 @@ fun DetailScreen() {
     Scaffold(
         topBar = {
             TopBar(
-                title = "Very long Route name",
+                title = viewModel.getRouteName(),
                 backButton = true
             )
         }
