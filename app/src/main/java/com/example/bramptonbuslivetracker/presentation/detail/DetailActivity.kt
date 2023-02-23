@@ -2,6 +2,7 @@ package com.example.bramptonbuslivetracker.presentation.detail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
@@ -52,6 +53,7 @@ fun DetailScreen() {
     val viewModel: DetailViewModel = viewModel()
     val busList = viewModel.busList.observeAsState()
     val currentDirectionId = viewModel.directionId.observeAsState()
+    val requestMade = viewModel.requestMade.observeAsState()
     val directionSwitched = viewModel.directionSwitched
     val directionPair = viewModel.getDirectionPair()
 
@@ -69,7 +71,8 @@ fun DetailScreen() {
             onDirectionClick = viewModel::setDirection,
             currentDirectionId = currentDirectionId.value,
             directionSwitched = directionSwitched,
-            saveDirection = viewModel::saveDirection
+            saveDirection = viewModel::saveDirection,
+            requestMade = requestMade.value
         )
         Modifier.padding(it)
     }
@@ -83,7 +86,8 @@ fun LocationCard(
     onDirectionClick: (directionId: Int) -> Unit,
     currentDirectionId: Int?,
     directionSwitched: LiveData<Boolean>,
-    saveDirection: () -> Unit
+    saveDirection: () -> Unit,
+    requestMade: Boolean?
 ) {
     Box {
         busList?.let {
@@ -95,7 +99,12 @@ fun LocationCard(
                     }
                     if(directionSwitched.value == true) {
                         val newLocation = LatLng(it[0].latitude, it[0].longitude)
-                        cameraPosition.move(CameraUpdateFactory.newLatLng(newLocation))
+                        try {
+                            cameraPosition.move(CameraUpdateFactory.newLatLng(newLocation))
+                        }
+                        catch(_: Exception) {
+                            Log.e("MAP", "CameraUpdateFactory not initialized")
+                        }
                         saveDirection()
                     }
                     Box {
@@ -127,6 +136,20 @@ fun LocationCard(
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+        }
+
+        if(busList == null && requestMade == true) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "Unable to establish connection",
+                    style = regularSignikanegativeBlue30.body1,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 

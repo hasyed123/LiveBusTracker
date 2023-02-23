@@ -9,6 +9,7 @@ import com.example.bramptonbuslivetracker.domain.model.Bus
 import com.example.bramptonbuslivetracker.domain.use_case.GetRouteBusesUseCase
 import com.example.bramptonbuslivetracker.domain.use_case.GetRouteDirectionPairUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +29,9 @@ class DetailViewModel @Inject constructor(
     private val _directionSwitched = MutableLiveData<Boolean>(false)
     val directionSwitched: LiveData<Boolean> = _directionSwitched
 
+    private val _requestMade = MutableLiveData<Boolean>(false)
+    val requestMade: LiveData<Boolean> = _requestMade
+
     private var routeNumber = ""
     private var routeName = ""
 
@@ -39,11 +43,16 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun refresh() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            _busList.postValue(
+                directionId.value?.let { getRouteBusesUseCase.getRouteBuses(routeNumber, it) }
+            )
+            _requestMade.postValue(true)
             while(true) {
-                _busList.value =
-                    directionId.value?.let { getRouteBusesUseCase.getRouteBuses(routeNumber, it) }
                 delay(1000)
+                _busList.postValue(
+                    directionId.value?.let { getRouteBusesUseCase.getRouteBuses(routeNumber, it) }
+                )
             }
         }
     }
