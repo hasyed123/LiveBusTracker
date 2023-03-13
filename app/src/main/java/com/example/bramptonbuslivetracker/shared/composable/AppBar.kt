@@ -26,7 +26,8 @@ fun TopBar(title: String, backButton: Boolean) {
             .background(color = regularBlue)
             .fillMaxWidth()
             .padding(
-                bottom = 12.dp
+                bottom = 12.dp,
+                top = if(!backButton) 12.dp else 4.dp
             )
     ) {
         if(backButton) {
